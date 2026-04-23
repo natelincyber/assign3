@@ -155,6 +155,65 @@ class TestChorusLapilli(unittest.TestCase):
         tiles[0].click()
         self.assertTileIs(tiles[0], self.SYMBOL_X)
 
+    def test_players_alternate(self):
+        '''Check that X and O alternate turns correctly.'''
+        tiles = self.driver.find_elements(By.XPATH, self.BOARD_TILE_XPATH)
+        tiles[0].click()
+        self.assertTileIs(tiles[0], self.SYMBOL_X)
+        tiles[1].click()
+        self.assertTileIs(tiles[1], self.SYMBOL_O)
+        tiles[2].click()
+        self.assertTileIs(tiles[2], self.SYMBOL_X)
+
+    def test_no_moves_after_win(self):
+        '''Check that clicking a tile does nothing after a player has won.
+
+        X wins by filling the top row: tiles 0, 1, 2.
+        O plays tiles 3 and 4 in between.
+        After X wins, clicking an empty tile should leave it empty.
+        '''
+        tiles = self.driver.find_elements(By.XPATH, self.BOARD_TILE_XPATH)
+        tiles[0].click()  # X at 0
+        tiles[3].click()  # O at 3
+        tiles[1].click()  # X at 1
+        tiles[4].click()  # O at 4
+        tiles[2].click()  # X at 2, wins
+        tiles[8].click()  # click empty tile after game is over
+        self.assertTileIs(tiles[8], self.SYMBOL_BLANK)
+
+    def test_cannot_overwrite_existing_piece(self):
+        '''Check that clicking an already filled tile does not change it.'''
+        tiles = self.driver.find_elements(By.XPATH, self.BOARD_TILE_XPATH)
+        tiles[0].click()  # X at 0
+        tiles[0].click()  # O tries to click the same tile
+        self.assertTileIs(tiles[0], self.SYMBOL_X)
+
+    def test_move_phase_piece_moves(self):
+        '''Check that in the move phase a piece moves from one tile to another.
+
+        We get both players to 3 pieces then move an X piece.
+        Board after placement:
+          X O X
+          O X O
+          . . .
+        tiles 0 2 4 are X, tiles 1 3 5 are O.
+        It is now X's turn and X has 3 pieces so X is in the move phase.
+        X clicks tile 4 (their center piece) to select it, then clicks tile 7
+        which is adjacent and empty. Tile 4 should become empty and tile 7
+        should become X.
+        '''
+        tiles = self.driver.find_elements(By.XPATH, self.BOARD_TILE_XPATH)
+        tiles[0].click()  # X
+        tiles[1].click()  # O
+        tiles[2].click()  # X
+        tiles[3].click()  # O
+        tiles[4].click()  # X
+        tiles[5].click()  # O, now both have 3 pieces, X's turn in move phase
+        tiles[4].click()  # X selects tile 4
+        tiles[7].click()  # X moves to tile 7
+        self.assertTileIs(tiles[4], self.SYMBOL_BLANK)
+        self.assertTileIs(tiles[7], self.SYMBOL_X)
+
 
 # ================= [DO NOT MAKE ANY CHANGES BELOW THIS LINE] =================
 
