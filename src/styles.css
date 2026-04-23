@@ -1,88 +1,69 @@
-* {
-  box-sizing: border-box;
+body {
+  font-family: sans-serif;
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
 }
 
-body {
-  background: #f8f9fa;
-  margin: 0;
-  padding: 0;
+.app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
 }
 
 h1 {
-  margin-top: 0;
-  font-size: 22px;
-}
-
-h2 {
-  margin-top: 0;
-  font-size: 20px;
-}
-
-h3 {
-  margin-top: 0;
-  font-size: 18px;
-}
-
-h4 {
-  margin-top: 0;
-  font-size: 16px;
-}
-
-h5 {
-  margin-top: 0;
-  font-size: 14px;
-}
-
-h6 {
-  margin-top: 0;
-  font-size: 12px;
-}
-
-code {
-  font-size: 1.2em;
-}
-
-ul {
-  padding-inline-start: 20px;
-}
-
-.greeting {
-  color: #2774ae;
-}
-
-.starter-card {
-  max-width: 42rem;
-}
-
-.square {
-  background: #fff;
-  border: 1px solid #999;
-  float: left;
-  font-size: 24px;
-  font-weight: bold;
-  line-height: 34px;
-  height: 34px;
-  margin-right: -1px;
-  margin-top: -1px;
-  padding: 0;
-  text-align: center;
-  width: 34px;
-}
-
-.board-row:after {
-  clear: both;
-  content: '';
-  display: table;
+  font-size: 2rem;
 }
 
 .status {
-  margin-bottom: 10px;
-}
-.game {
-  display: flex;
-  flex-direction: row;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
 }
 
-.game-info {
-  margin-left: 20px;
+.error {
+  color: red;
+  font-size: 1rem;
+  min-height: 1.5rem;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 160px);
+  grid-template-rows: repeat(3, 160px);
+}
+
+.square {
+  width: 160px;
+  height: 160px;
+  font-size: 5rem;
+  font-weight: bold;
+  cursor: pointer;
+  background: white;
+  border: 3px solid #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.square:hover {
+  background: #f0f0f0;
+}
+
+.square.selected {
+  background: #d0f0d0;
+}
+
+.square.winning {
+  background: #fff0a0;
+}
+
+.square.valid-move {
+  background: #e0f0e0;
+}
+
+.reset-btn {
+  font-size: 1rem;
+  padding: 0.5rem 1.5rem;
+  cursor: pointer;
 }
