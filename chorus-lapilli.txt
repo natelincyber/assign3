@@ -1,0 +1,153 @@
+Chorus Lapilli Lab Notebook
+===========================
+
+Goal: Modify the tic-tac-toe app to implement chorus lapilli, a variant based
+on the ancient Roman game terni lapilli. The rules are the same as tic-tac-toe
+except for two things:
+
+1. After each player has placed 3 pieces they stop placing new ones and instead
+   move one of their existing pieces to an adjacent empty square (up, down,
+   left, right, or diagonal).
+
+2. If it is your turn to move and you have a piece in the center square, your
+   move must either win the game or move the center piece out of the center.
+
+All changes were made in src/App.jsx and src/styles.css. No new packages were
+installed.
+
+
+Step 1: Planned out the new state I would need
+
+The original tic-tac-toe only needed squares and isXTurn. For chorus lapilli
+I also needed to track:
+
+  selected: the index of the piece the current player has clicked on to move,
+            or null if nothing is selected yet. This is only used during the
+            move phase.
+
+  moveError: a string shown to the player when they try to do something
+             invalid, like moving to a non-adjacent square.
+
+I also needed to know when each player enters the "move phase". A player is
+in the move phase when it is their turn and they already have 3 pieces on
+the board. I derived this from the squares array by counting how many X and O
+values it contains.
+
+    const xCount = squares.filter(s => s === 'X').length
+    const oCount = squares.filter(s => s === 'O').length
+    const inMovePhase = (isXTurn && xCount === 3) || (!isXTurn && oCount === 3)
+
+
+Step 2: Defined adjacency
+
+In a 3x3 grid the squares are numbered 0 through 8 like this:
+
+    0 1 2
+    3 4 5
+    6 7 8
+
+I hardcoded an ADJACENT object that maps each square index to a list of its
+neighboring square indices including diagonals. For example square 0 is
+adjacent to 1, 3, and 4. Square 4 (the center) is adjacent to all 8 others.
+
+    const ADJACENT = {
+      0: [1, 3, 4],
+      1: [0, 2, 3, 4, 5],
+      ...
+    }
+
+
+Step 3: Updated handleClick to handle both phases
+
+During the placement phase the logic is the same as tic-tac-toe. If the square
+is empty and there is no winner we fill it with the current player symbol and
+flip the turn.
+
+During the move phase a click works differently depending on whether a piece
+is already selected.
+
+If nothing is selected yet the click is the "first click" and it should select
+one of the current player's pieces. I added validation here:
+  - The clicked square must contain the current player's symbol
+  - If the center rule applies (player has a piece at index 4) then the player
+    must either select the center piece or select a different piece that can
+    immediately win the game. I checked this by simulating all possible
+    destinations for that piece and running calculateWinner on each result.
+
+If a piece is already selected the click is the "second click" and it should
+be the destination. I added validation:
+  - If the player clicks the already selected square it deselects it
+  - If the player clicks one of their own other pieces we switch the selection
+    to that piece (and re-apply the center rule check)
+  - Otherwise the destination must be empty and must be in the ADJACENT list
+    for the selected square
+  - If the center rule applies and the selected piece is NOT the center piece
+    then the move must be a winning move. I checked this with a wouldWin helper
+    that temporarily applies the move to a copy of the board and runs
+    calculateWinner on it.
+  - If all checks pass we apply the move: set selected square to null and set
+    destination square to the current player symbol.
+
+
+Step 4: Wrote the wouldWin helper
+
+    function wouldWin(squares, from, to, player) {
+      const next = squares.slice()
+      next[to] = player
+      if (from !== null) next[from] = null
+      return !!calculateWinner(next)
+    }
+
+This lets me check hypothetical moves without modifying the real state.
+
+
+Step 5: Added visual feedback for the move phase
+
+I added two extra CSS classes to the Square component:
+
+  selected: highlights the piece the player has clicked on in light green
+  valid-move: shows a light green tint on empty squares adjacent to the
+              selected piece so the player can see where they are allowed to go
+
+To compute valid destinations I filtered ADJACENT[selected] to only include
+squares that are currently empty.
+
+
+Step 6: Updated the status message
+
+I changed the status line to give the player useful information depending on
+what phase and sub-state the game is in:
+
+  Placement phase: "X's turn"
+  Move phase, nothing selected: "X: select a piece to move"
+  Move phase, piece selected: "X: choose a destination"
+  Game over: "X wins!"
+
+I also added a red error message below the status that shows when the player
+tries to make an invalid move. It clears itself on the next valid interaction.
+
+
+Step 7: Updated CSS
+
+I moved all styles from the inline style tag in App.jsx into styles.css and
+imported it at the top of App.jsx with:
+
+    import './styles.css'
+
+I made each square 160x160 pixels with a 5rem font size so the board is large
+and easy to click. I also added styles for the selected and valid-move and
+winning square states.
+
+
+Step 8: Tested edge cases in the browser
+
+Things I verified manually:
+  - Players can only place pieces during the placement phase
+  - After each player has 3 pieces the move phase starts for the next turn
+  - You cannot move to a non-adjacent square
+  - You cannot move to an occupied square
+  - The center rule correctly forces you to move the center piece when it applies
+  - A winning move is still allowed even if the center rule is active
+  - Invalid second clicks reset the selection so the player can try again
+  - Win detection still works correctly after moves
+  - The New Game button resets everything including selected and moveError

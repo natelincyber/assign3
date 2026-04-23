@@ -1,0 +1,81 @@
+Tic-Tac-Toe Lab Notebook
+========================
+
+Goal: Build the tic-tac-toe game from the React tutorial inside src/App.jsx.
+The project was already set up with Vite and React so I did not need to run
+any install commands. I used ./helper dev to view changes in the browser.
+
+
+Step 1: Looked at the starter code in App.jsx
+
+The file had a Hello World style component using React Bootstrap with a card
+and a button. I deleted all of it and started fresh since the assignment said
+all changes go in App.jsx.
+
+
+Step 2: Built the Square component
+
+I made a Square component that renders a button. It takes a value prop (either
+"X", "O", or null) and an onClick prop. When value is null the button shows
+nothing. This is the simplest possible piece of UI for a single board cell.
+
+    function Square({ value, onClick }) {
+      return (
+        <button onClick={onClick}>
+          {value}
+        </button>
+      )
+    }
+
+
+Step 3: Built the Board component inside App
+
+I made a 3x3 grid of Square components using a squares array in state,
+initialized to 9 nulls. I also tracked whose turn it was with an isXTurn
+boolean in state.
+
+Each Square gets passed its value from the squares array and a handleClick
+function that fills in the square with the current player's symbol and
+flips the turn.
+
+    const [squares, setSquares] = React.useState(Array(9).fill(null))
+    const [isXTurn, setIsXTurn] = React.useState(true)
+
+
+Step 4: Added win detection
+
+I wrote a calculateWinner function that checks all 8 possible winning lines
+(3 rows, 3 columns, 2 diagonals). If it finds a line where all three squares
+match and are not null it returns the winner. Otherwise it returns null.
+
+    const LINES = [
+      [0, 1, 2], [3, 4, 5], [6, 7, 8],
+      [0, 3, 6], [1, 4, 7], [2, 5, 8],
+      [0, 4, 8], [2, 4, 6],
+    ]
+
+I called this function inside the component and showed a status message like
+"X wins!" or "O's turn" depending on the result.
+
+I also made sure handleClick returns early if the square is already filled or
+if there is already a winner so you cannot keep clicking after the game ends.
+
+
+Step 5: Added a reset button
+
+I added a "New Game" button that resets squares back to 9 nulls and sets
+isXTurn back to true.
+
+
+Step 6: Added basic CSS
+
+I used the styles.css file, modified it and imported it in App.jsx. I styled the board as a CSS
+grid with 3 columns. Each square is a fixed size button with a border. I
+also centered everything on the page with flexbox on the body.
+
+
+Step 7: Tested in the browser
+
+Ran ./helper dev and opened localhost:5173. Clicked through several games.
+Win detection worked correctly. Clicking a filled square did nothing. The
+reset button cleared the board. Looked good.
