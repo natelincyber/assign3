@@ -98,7 +98,7 @@ export default function App() {
           const dests = getValidDestinations(squares, index)
           const canWin = dests.some(d => wouldWin(squares, index, d, currentPlayer))
           if (!canWin) {
-            setMoveError('You have a piece in the center — you must move it or win.')
+            setMoveError('You have a piece in the center, you must move it or win.')
             return
           }
         }
@@ -115,7 +115,7 @@ export default function App() {
             const dests = getValidDestinations(squares, index)
             const canWin = dests.some(d => wouldWin(squares, index, d, currentPlayer))
             if (!canWin) {
-              setMoveError('You have a piece in the center — you must move it or win.')
+              setMoveError('You have a piece in the center, you must move it or win.')
               setSelected(null)
               return
             }
@@ -125,20 +125,20 @@ export default function App() {
         }
         // Destination must be empty
         if (squares[index] !== null) {
-          setMoveError('Invalid move — destination must be empty.')
+          setMoveError('Invalid move, destination must be empty.')
           setSelected(null)
           return
         }
         // Destination must be adjacent
         if (!ADJACENT[selected].includes(index)) {
-          setMoveError('Invalid move — must move to an adjacent square.')
+          setMoveError('Invalid move, must move to an adjacent square.')
           setSelected(null)
           return
         }
         // Center rule: if non-center piece selected, the move must win
         if (mustMoveCenter && selected !== CENTER) {
           if (!wouldWin(squares, selected, index, currentPlayer)) {
-            setMoveError('You have a piece in the center — you must move it or win.')
+            setMoveError('You have a piece in the center, you must move it or win.')
             setSelected(null)
             return
           }
